@@ -1,5 +1,5 @@
 import { renderBlock } from './lib.js';
-export function renderUserBlock(favoriteItemsAmount, userName = 'Wade Warren', userAvatar = '/img/avatar.png') {
+export function renderUserBlock(favoriteItemsAmount, userName = 'Wade Warren', userAvatar = 'img/avatar.png') {
     const favoritesCaption = favoriteItemsAmount ? favoriteItemsAmount : 'ничего нет';
     const hasFavoriteItems = !!favoriteItemsAmount;
     console.log(favoriteItemsAmount);
