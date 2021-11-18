@@ -8707,7 +8707,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _lib_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib.js */ "./public/scripts/lib.js");
 
-function renderUserBlock(favoriteItemsAmount, userName = 'Wade Warren', userAvatar = 'img/avatar.png') {
+function renderUserBlock(favoriteItemsAmount, userName = 'Wade Warren', userAvatar = './img/avatar.png') {
   const favoritesCaption = favoriteItemsAmount ? favoriteItemsAmount : 'ничего нет';
   const hasFavoriteItems = !!favoriteItemsAmount;
   console.log(favoriteItemsAmount);
