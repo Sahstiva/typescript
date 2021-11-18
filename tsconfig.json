@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "public/scripts",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node"
+  },
+  "files": [
+    "src/app.ts"
+  ]
+}
