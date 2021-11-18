@@ -9,7 +9,7 @@ export function renderUserBlock (favoriteItemsAmount:number, userName = 'Wade Wa
     'user-block',
     `
     <div class="header-container">
-      <img class="avatar" src="${ userAvatar }" alt="Wade Warren" />
+      <img class="avatar" src="${ userAvatar }" alt="${ userName }" />
       <div class="info">
           <p class="name">${ userName }</p>
           <p class="fav">

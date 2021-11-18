@@ -8713,7 +8713,7 @@ function renderUserBlock(favoriteItemsAmount, userName = 'Wade Warren', userAvat
   console.log(favoriteItemsAmount);
   (0,_lib_js__WEBPACK_IMPORTED_MODULE_0__.renderBlock)('user-block', `
     <div class="header-container">
-      <img class="avatar" src="${userAvatar}" alt="Wade Warren" />
+      <img class="avatar" src="${userAvatar}" alt="${userName}" />
       <div class="info">
           <p class="name">${userName}</p>
           <p class="fav">
