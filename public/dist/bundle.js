@@ -8444,14 +8444,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _search_results_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./search-results.js */ "./public/scripts/search-results.js");
 /* harmony import */ var _user_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./user.js */ "./public/scripts/user.js");
 /* harmony import */ var _lib_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lib.js */ "./public/scripts/lib.js");
-/* harmony import */ var luxon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! luxon */ "./node_modules/luxon/build/cjs-browser/luxon.js");
-
 
 
 
 
 window.addEventListener('DOMContentLoaded', () => {
-  (0,_user_js__WEBPACK_IMPORTED_MODULE_2__.renderUserBlock)(0, 'Sahstiva', '/img/av.png');
+  const currentUser = (0,_user_js__WEBPACK_IMPORTED_MODULE_2__.getUserData)();
+  (0,_user_js__WEBPACK_IMPORTED_MODULE_2__.renderUserBlock)(0, currentUser.username, currentUser.avatarUrl);
   (0,_search_form_js__WEBPACK_IMPORTED_MODULE_0__.renderSearchFormBlock)();
   (0,_search_results_js__WEBPACK_IMPORTED_MODULE_1__.renderSearchStubBlock)();
   (0,_lib_js__WEBPACK_IMPORTED_MODULE_3__.renderToast)({
@@ -8463,21 +8462,7 @@ window.addEventListener('DOMContentLoaded', () => {
       console.log('Уведомление закрыто');
     }
   });
-  document.getElementById('findButton').addEventListener('click', ev => {
-    // ev.preventDefault();
-    const checkIn = luxon__WEBPACK_IMPORTED_MODULE_4__.DateTime.fromISO(document.getElementById('check-in-date').value).setLocale('ru');
-    const checkOut = luxon__WEBPACK_IMPORTED_MODULE_4__.DateTime.fromISO(document.getElementById('check-out-date').value).setLocale('ru');
-    (0,_search_form_js__WEBPACK_IMPORTED_MODULE_0__.renderSearchFormBlock)(checkIn, checkOut);
-    (0,_lib_js__WEBPACK_IMPORTED_MODULE_3__.renderToast)({
-      text: `Выбраны даты c ${checkIn.toLocaleString(luxon__WEBPACK_IMPORTED_MODULE_4__.DateTime.DATE_MED)} по ${checkOut.toLocaleString(luxon__WEBPACK_IMPORTED_MODULE_4__.DateTime.DATE_MED)}`,
-      type: 'success'
-    }, {
-      name: 'Хорошо',
-      handler: () => {
-        console.log('Уведомление закрыто');
-      }
-    });
-  });
+  document.getElementById('findButton').addEventListener('click', _search_form_js__WEBPACK_IMPORTED_MODULE_0__.searchHandler);
 });
 
 /***/ }),
@@ -8533,12 +8518,47 @@ function renderToast(message, action = null) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "searchHandler": () => (/* binding */ searchHandler),
+/* harmony export */   "search": () => (/* binding */ search),
 /* harmony export */   "renderSearchFormBlock": () => (/* binding */ renderSearchFormBlock)
 /* harmony export */ });
 /* harmony import */ var _lib_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib.js */ "./public/scripts/lib.js");
 /* harmony import */ var luxon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! luxon */ "./node_modules/luxon/build/cjs-browser/luxon.js");
 
 
+function searchHandler(event) {
+  event.preventDefault();
+  const city = document.getElementById('city').value;
+  const checkIn = luxon__WEBPACK_IMPORTED_MODULE_1__.DateTime.fromISO(document.getElementById('check-in-date').value).setLocale('ru');
+  const checkOut = luxon__WEBPACK_IMPORTED_MODULE_1__.DateTime.fromISO(document.getElementById('check-out-date').value).setLocale('ru');
+  const maxPrice = parseFloat(document.getElementById('max-price').value);
+  search({
+    city: city,
+    startDate: checkIn,
+    endDate: checkOut,
+    maxPrice: maxPrice
+  }, (error, places) => {
+    if (error == null && places != null) {
+      console.log('Success!');
+    } else {
+      console.error('Fail', error);
+    }
+  });
+}
+function search(data, callback) {
+  console.log(data);
+  renderSearchFormBlock(data.startDate, data.endDate);
+  (0,_lib_js__WEBPACK_IMPORTED_MODULE_0__.renderToast)({
+    text: `Выбраны даты c ${data.startDate.toLocaleString(luxon__WEBPACK_IMPORTED_MODULE_1__.DateTime.DATE_MED)} по ${data.endDate.toLocaleString(luxon__WEBPACK_IMPORTED_MODULE_1__.DateTime.DATE_MED)}`,
+    type: 'success'
+  }, {
+    name: 'Хорошо',
+    handler: () => {
+      console.log('Уведомление закрыто');
+    }
+  });
+  if (Math.floor(Math.random() * 100) % 2) setTimeout(() => callback(null, []), 2000);else setTimeout(() => callback(new Error('Ошибка!')), 2000);
+}
 function renderSearchFormBlock(startDate = null, endDate = null) {
   const todayDate = luxon__WEBPACK_IMPORTED_MODULE_1__.DateTime.now().set({
     hour: 0,
@@ -8703,10 +8723,33 @@ function renderSearchResultsBlock() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "User": () => (/* binding */ User),
+/* harmony export */   "getUserData": () => (/* binding */ getUserData),
 /* harmony export */   "renderUserBlock": () => (/* binding */ renderUserBlock)
 /* harmony export */ });
 /* harmony import */ var _lib_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib.js */ "./public/scripts/lib.js");
 
+class User {
+  username;
+  avatarUrl;
+
+  constructor(username, avatarUrl) {
+    this.username = username;
+    this.avatarUrl = avatarUrl;
+  }
+
+}
+function getUserData() {
+  const currentUser = JSON.parse(localStorage.getItem('User'));
+  if (currentUser instanceof User) return {
+    username: currentUser.username,
+    avatarUrl: currentUser.avatarUrl
+  };else {
+    const newUser = new User('Sahstiva', '/img/av.png');
+    localStorage.setItem('User', JSON.stringify(newUser));
+    return newUser;
+  }
+}
 function renderUserBlock(favoriteItemsAmount, userName = 'Wade Warren', userAvatar = './img/avatar.png') {
   const favoritesCaption = favoriteItemsAmount ? favoriteItemsAmount : 'ничего нет';
   const hasFavoriteItems = !!favoriteItemsAmount;

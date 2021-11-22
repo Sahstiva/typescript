@@ -1,18 +1,12 @@
-import { renderSearchFormBlock } from './search-form.js';
+import { renderSearchFormBlock, searchHandler } from './search-form.js';
 import { renderSearchStubBlock } from './search-results.js';
-import { renderUserBlock } from './user.js';
+import { renderUserBlock, getUserData } from './user.js';
 import { renderToast } from './lib.js';
-import { DateTime } from 'luxon';
 window.addEventListener('DOMContentLoaded', () => {
-    renderUserBlock(0, 'Sahstiva', '/img/av.png');
+    const currentUser = getUserData();
+    renderUserBlock(0, currentUser.username, currentUser.avatarUrl);
     renderSearchFormBlock();
     renderSearchStubBlock();
     renderToast({ text: 'Это пример уведомления. Используйте его при необходимости', type: 'success' }, { name: 'Понял', handler: () => { console.log('Уведомление закрыто'); } });
-    document.getElementById('findButton').addEventListener('click', ev => {
-        // ev.preventDefault();
-        const checkIn = DateTime.fromISO(document.getElementById('check-in-date').value).setLocale('ru');
-        const checkOut = DateTime.fromISO(document.getElementById('check-out-date').value).setLocale('ru');
-        renderSearchFormBlock(checkIn, checkOut);
-        renderToast({ text: `Выбраны даты c ${checkIn.toLocaleString(DateTime.DATE_MED)} по ${checkOut.toLocaleString(DateTime.DATE_MED)}`, type: 'success' }, { name: 'Хорошо', handler: () => { console.log('Уведомление закрыто'); } });
-    });
+    document.getElementById('findButton').addEventListener('click', searchHandler);
 });

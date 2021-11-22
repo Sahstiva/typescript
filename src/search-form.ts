@@ -1,5 +1,52 @@
-import { renderBlock } from './lib.js';
+import {renderBlock, renderToast} from './lib.js';
 import { DateTime } from 'luxon';
+
+export interface iSearchFormData {
+  city: string
+  startDate: DateTime
+  endDate: DateTime
+  maxPrice: number
+}
+export interface iPlace {
+
+}
+
+export function searchHandler(event) {
+  event.preventDefault();
+  const city = (document.getElementById('city') as HTMLInputElement).value;
+  const checkIn = DateTime.fromISO((document.getElementById('check-in-date') as HTMLInputElement).value).setLocale('ru');
+  const checkOut = DateTime.fromISO((document.getElementById('check-out-date') as HTMLInputElement).value).setLocale('ru');
+  const maxPrice = parseFloat((document.getElementById('max-price') as HTMLInputElement).value);
+  search({
+    city: city,
+    startDate: checkIn,
+    endDate: checkOut,
+    maxPrice: maxPrice
+  },
+  (error?:Error, places?:iPlace) => {
+    if (error == null && places != null) {
+      console.log('Success!')
+    } else {
+      console.error('Fail', error)
+    }
+  }
+  );
+}
+
+export function search(data: iSearchFormData, callback: (error?: Error, places?: iPlace[]) => void):void {
+  console.log(data);
+  renderSearchFormBlock(data.startDate, data.endDate);
+  renderToast(
+    {text: `Выбраны даты c ${data.startDate.toLocaleString(DateTime.DATE_MED)} по ${data.endDate.toLocaleString(DateTime.DATE_MED)}`, type: 'success'},
+    {name: 'Хорошо', handler: () => {console.log('Уведомление закрыто')}}
+  );
+  if(Math.floor(Math.random()*100)%2)
+    setTimeout(() => callback(null, []), 2000);
+  else
+    setTimeout(() => callback(new Error('Ошибка!')), 2000);
+
+
+}
 
 export function renderSearchFormBlock (startDate: DateTime = null, endDate: DateTime = null) {
   const todayDate = DateTime.now().set({ hour: 0, minute: 0, second: 0, millisecond: 0});
